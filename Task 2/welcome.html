@@ -1,0 +1,51 @@
+<!-- welcome.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to My To-Do App</title>
+    
+    <style>
+
+        h1 
+        {
+            color: aliceblue;
+        }
+
+        /* Add your animation styles here */
+        .welcome-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            animation: fadeIn 2s ease-out; /* Example animation */
+            background-image: url("/images/312720.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h1>Welcome to My To-Do App</h1>
+        <!-- Add your logo or any other relevant content here -->
+    </div>
+
+    <script>
+        setTimeout(() => {
+            window.location.href = 'task2.html'; // Redirect to your main app page
+        }, 10000); // 3000 milliseconds (3 seconds)
+    </script>
+</body>
+</html>

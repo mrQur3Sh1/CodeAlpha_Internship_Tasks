@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+
+body {
+    background-color: #f8f9fa;
+}
+
+.task-done {
+            text-decoration: line-through;
+        }
+
+
+        .timestamp {
+            font-size: 0.8em;
+            color: #888;
+            margin-left: 10px;
+        }
+
+        .done-button {
+            color: green;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        
+        
+.container {
+    max-width: 600px;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    align-items: center;
+}
+
+#taskList .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">To-Do List</h2>
+        <div class="input-group mb-3">
+            <input type="text" id="taskInput" class="form-control" placeholder="Enter a new task">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" id="addTaskButton">Add Task</button>
+            </div>
+        </div>
+        <ul class="list-group" id="taskList"></ul>
+    </div>
+    
+
+   
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const taskInput = document.getElementById('taskInput');
+            const addTaskButton = document.getElementById('addTaskButton');
+            const taskList = document.getElementById('taskList');
+    
+            // Function to add a task
+            function addTask() {
+                const taskText = taskInput.value.trim();
+                if (taskText !== '') {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    const currentTime = new Date().toLocaleTimeString(); // Get the current time
+                    listItem.innerHTML = `
+                        <span class="done-button">✓</span> <!-- Green tick button -->
+                        <span class="task-text">${taskText}</span>
+                        <span class="timestamp">${currentTime}</span> <!-- Timestamp -->
+                        <button class="btn btn-danger btn-sm delete-button">Delete</button>
+                    `;
+                    taskList.appendChild(listItem);
+                    taskInput.value = '';
+                }
+            }
+    
+            // Function to handle task click
+            function handleTaskClick(event) {
+                if (event.target.classList.contains('delete-button')) {
+                    const listItem = event.target.closest('li');
+                    taskList.removeChild(listItem);
+                } else if (event.target.classList.contains('done-button')) {
+                    const taskText = event.target.nextElementSibling;
+                    taskText.classList.toggle('task-done'); // Toggle the 'task-done' class
+                }
+            }
+    
+            addTaskButton.addEventListener('click', addTask);
+            taskList.addEventListener('click', handleTaskClick);
+        });
+    </script>
+
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
