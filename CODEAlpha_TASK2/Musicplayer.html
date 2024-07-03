@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Music Player</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #121212;
+            color: #fff;
+        }
+        .navbar {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+            width: 80px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #1db954;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .navbar a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 60px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 20px;
+        }
+        .navbar a:hover {
+            background-color: #1ed760;
+        }
+        .content {
+            margin-left: 100px;
+            padding: 20px;
+        }
+        .player {
+            width: 100%;
+            height: 90px;
+            position: fixed;
+            bottom: 0;
+            background-color: #282828;
+            color: #fff;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .controls button, .controls input {
+            margin: 0 10px;
+        }
+        .song-list {
+            margin: 20px 0;
+        }
+        .song-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+        }
+        .song-item:hover {
+            background-color: #333;
+        }
+        .song-details {
+            margin-top: 20px;
+            display: none;
+        }
+        .song-details img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+        .player-left {
+            display: flex;
+            align-items: center;
+        }
+        .player-left img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        .player-center {
+            display: flex;
+            align-items: center;
+        }
+        .player-center button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            margin: 0 5px;
+        }
+        .player-center button:hover {
+            color: #1db954;
+        }
+        .player-right {
+            display: flex;
+            align-items: center;
+        }
+        .player-right input {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#">Home</a>
+        <a href="#">Search</a>
+        <a href="#">Your Library</a>
+    </div>
+    <div class="content">
+        <h1 class="text-center my-4">Retrofye</h1>
+        <input type="text" id="search" placeholder="Search songs..." class="form-control mb-3">
+        <div class="song-list">
+            <div class="song-item" data-song="./Music/kitty.mp3" data-artist="Mr.Kitty" data-img="./Img/kitty.jpeg">
+                <span>After Dark - Mr.Kitty</span>
+            </div>
+            <div class="song-item" data-song="./Music/pastel ghost - iris [slowed  reverb].mp3" data-artist="Pastel Ghost" data-img="./Img/2.jpg">
+                <span>pastel ghost - iris [slowed  reverb]</span>
+            </div>
+            <div class="song-item" data-song="./Music/d4vd - Romantic Homicide.mp3" data-artist="d4vd" data-img="./Img/hq720.jpg">
+                <span>d4vd - Romantic Homicide</span>
+            </div>
+        </div>
+        <div class="song-details">
+            <img id="artist-img" src="" alt="Artist Image">
+            <h3 id="song-title"></h3>
+            <p id="song-artist"></p>
+        </div>
+    </div>
+
+    <div class="player">
+        <div class="player-left">
+            <img id="player-artist-img" src="" alt="Artist Image">
+            <div>
+                <p id="player-song-title" class="m-0"></p>
+                <p id="player-song-artist" class="m-0 text-muted"></p>
+            </div>
+        </div>
+        <div class="player-center">
+            <button id="prev" class="btn"><i class="fas fa-step-backward"></i></button>
+            <button id="play" class="btn"><i class="fas fa-play"></i></button>
+            <button id="pause" class="btn"><i class="fas fa-pause"></i></button>
+            <button id="next" class="btn"><i class="fas fa-step-forward"></i></button>
+            <div id="progress-bar" class="progress" style="width: 200px; height: 5px;">
+                <div id="progress" class="progress-bar" role="progressbar" style="width: 0;"></div>
+            </div>
+            <span id="current-time">0:00</span>
+            <span id="duration">0:00</span>
+        </div>
+        
+        <div class="player-right">
+            <input id="volume" type="range" min="0" max="1" step="0.1">
+        </div>
+    </div>
+
+    <audio id="audio"></audio>
+
+    <script>
+        var audio = document.getElementById('audio');
+        var playButton = document.getElementById('play');
+        var pauseButton = document.getElementById('pause');
+        var prevButton = document.getElementById('prev');
+        var nextButton = document.getElementById('next');
+        var volumeControl = document.getElementById('volume');
+        var songItems = document.querySelectorAll('.song-item');
+        var searchInput = document.getElementById('search');
+        var songDetails = document.querySelector('.song-details');
+        var artistImg = document.getElementById('artist-img');
+        var songTitle = document.getElementById('song-title');
+        var songArtist = document.getElementById('song-artist');
+        var playerArtistImg = document.getElementById('player-artist-img');
+        var playerSongTitle = document.getElementById('player-song-title');
+        var playerSongArtist = document.getElementById('player-song-artist');
+        var progressBar = document.getElementById('progress');
+        var progressContainer = document.getElementById('progress-bar');
+        var currentTimeEl = document.getElementById('current-time');
+        var durationEl = document.getElementById('duration');
+        var currentSongIndex = -1;
+
+        function playSong(index) {
+            var item = songItems[index];
+            var songSrc = item.getAttribute('data-song');
+            var artist = item.getAttribute('data-artist');
+            var imgSrc = item.getAttribute('data-img');
+
+            audio.src = songSrc;
+            songTitle.textContent = item.textContent;
+            songArtist.textContent = artist;
+            artistImg.src = imgSrc;
+            playerSongTitle.textContent = item.textContent;
+            playerSongArtist.textContent = artist;
+            playerArtistImg.src = imgSrc;
+            songDetails.style.display = 'block';
+
+            currentSongIndex = index;
+            audio.play();
+        }
+
+        function updateProgress() {
+            var currentTime = audio.currentTime;
+            var duration = audio.duration;
+            var progressPercent = (currentTime / duration) * 100;
+            progressBar.style.width = progressPercent + '%';
+
+            var currentMinutes = Math.floor(currentTime / 60);
+            var currentSeconds = Math.floor(currentTime % 60);
+            var durationMinutes = Math.floor(duration / 60);
+            var durationSeconds = Math.floor(duration % 60);
+
+            if (currentSeconds < 10) currentSeconds = '0' + currentSeconds;
+            if (durationSeconds < 10) durationSeconds = '0' + durationSeconds;
+
+            currentTimeEl.textContent = currentMinutes + ':' + currentSeconds;
+            durationEl.textContent = durationMinutes + ':' + durationSeconds;
+        }
+
+        playButton.addEventListener('click', function() {
+            if (audio.src) {
+                audio.play();
+            } else if (currentSongIndex >= 0) {
+                playSong(currentSongIndex);
+            }
+        });
+
+        pauseButton.addEventListener('click', function() {
+            audio.pause();
+        });
+
+        prevButton.addEventListener('click', function() {
+            if (currentSongIndex > 0) {
+                playSong(currentSongIndex - 1);
+            }
+        });
+
+        nextButton.addEventListener('click', function() {
+            if (currentSongIndex < songItems.length - 1) {
+                playSong(currentSongIndex + 1);
+            }
+        });
+
+        volumeControl.addEventListener('change', function() {
+            audio.volume = this.value;
+        });
+
+        audio.addEventListener('timeupdate', updateProgress);
+
+        songItems.forEach(function(item, index) {
+            item.addEventListener('click', function() {
+                playSong(index);
+            });
+        });
+
+        searchInput.addEventListener('input', function() {
+            var query = this.value.toLowerCase();
+            songItems.forEach(function(item) {
+                var songTitle = item.textContent.toLowerCase();
+                if (songTitle.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        audio.addEventListener('ended', function() {
+            if (currentSongIndex < songItems.length - 1) {
+                playSong(currentSongIndex + 1);
+            }
+        });
+    </script>
+</body>
+</html>
