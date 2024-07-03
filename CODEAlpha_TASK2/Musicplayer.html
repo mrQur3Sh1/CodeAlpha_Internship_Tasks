@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Music Player</title>
+    <title>Retrofye</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
+     <link rel="icon" type="image/png" href="./Img/OK.png">
+    
+    
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -18,29 +20,35 @@
             justify-content: space-around;
             align-items: center;
             height: 100%;
-            width: 80px;
+            width: 240px;
             position: fixed;
             top: 0;
             left: 0;
-            background-color: #1db954;
-            padding: 20px 0;
+            background-color: #000;
+            padding: 20px;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
         }
         .navbar a {
             display: flex;
             align-items: center;
-            justify-content: center;
             width: 100%;
-            height: 60px;
-            color: #fff;
+            color: #b3b3b3;
             text-decoration: none;
-            font-size: 20px;
+            font-size: 16px;
+            padding: 10px 20px;
         }
         .navbar a:hover {
-            background-color: #1ed760;
+            color: #fff;
+        }
+        .navbar a.active {
+            color: #fff;
+            font-weight: bold;
+        }
+        .navbar a i {
+            margin-right: 10px;
         }
         .content {
-            margin-left: 100px;
+            margin-left: 260px;
             padding: 20px;
         }
         .player {
@@ -120,15 +128,16 @@
 </head>
 <body>
     <div class="navbar">
-        <a href="#">Home</a>
-        <a href="#">Search</a>
-        <a href="#">Your Library</a>
+        <a href="#" class="active"><i class="fas fa-home"></i>Home</a>
+        <a href="#"><i class="fas fa-search"></i>Search</a>
+        <a href="#"><i class="fas fa-book"></i>Your Library</a>
     </div>
     <div class="content">
-        <h1 class="text-center my-4">Retrofye</h1>
+        <h1 style="display: inline-block; vertical-align: middle;">Retrofye</h1>
+        <img src="Img/OK.png" alt="Logo" style="height: 70px; margin-left: -10px;">
         <input type="text" id="search" placeholder="Search songs..." class="form-control mb-3">
         <div class="song-list">
-            <div class="song-item" data-song="./Music/kitty.mp3" data-artist="Mr.Kitty" data-img="./Img/kitty.jpeg">
+            <div class="song-item" data-song="./Music/123.mp3" data-artist="Mr.Kitty" data-img="./Img/kitty.jpeg">
                 <span>After Dark - Mr.Kitty</span>
             </div>
             <div class="song-item" data-song="./Music/pastel ghost - iris [slowed  reverb].mp3" data-artist="Pastel Ghost" data-img="./Img/2.jpg">
@@ -164,7 +173,6 @@
             <span id="current-time">0:00</span>
             <span id="duration">0:00</span>
         </div>
-        
         <div class="player-right">
             <input id="volume" type="range" min="0" max="1" step="0.1">
         </div>
@@ -173,117 +181,120 @@
     <audio id="audio"></audio>
 
     <script>
-        var audio = document.getElementById('audio');
-        var playButton = document.getElementById('play');
-        var pauseButton = document.getElementById('pause');
-        var prevButton = document.getElementById('prev');
-        var nextButton = document.getElementById('next');
-        var volumeControl = document.getElementById('volume');
-        var songItems = document.querySelectorAll('.song-item');
-        var searchInput = document.getElementById('search');
-        var songDetails = document.querySelector('.song-details');
-        var artistImg = document.getElementById('artist-img');
-        var songTitle = document.getElementById('song-title');
-        var songArtist = document.getElementById('song-artist');
-        var playerArtistImg = document.getElementById('player-artist-img');
-        var playerSongTitle = document.getElementById('player-song-title');
-        var playerSongArtist = document.getElementById('player-song-artist');
-        var progressBar = document.getElementById('progress');
-        var progressContainer = document.getElementById('progress-bar');
-        var currentTimeEl = document.getElementById('current-time');
-        var durationEl = document.getElementById('duration');
-        var currentSongIndex = -1;
+window.onload = function() {
+    var audio = document.getElementById('audio');
+    var playButton = document.getElementById('play');
+    var pauseButton = document.getElementById('pause');
+    var prevButton = document.getElementById('prev');
+    var nextButton = document.getElementById('next');
+    var volumeControl = document.getElementById('volume');
+    var songItems = document.querySelectorAll('.song-item');
+    var searchInput = document.getElementById('search');
+    var songDetails = document.querySelector('.song-details');
+    var artistImg = document.getElementById('artist-img');
+    var songTitle = document.getElementById('song-title');
+    var songArtist = document.getElementById('song-artist');
+    var playerArtistImg = document.getElementById('player-artist-img');
+    var playerSongTitle = document.getElementById('player-song-title');
+    var playerSongArtist = document.getElementById('player-song-artist');
+    var progressBar = document.getElementById('progress');
+    var progressContainer = document.getElementById('progress-bar');
+    var currentTimeEl = document.getElementById('current-time');
+    var durationEl = document.getElementById('duration');
+    var currentSongIndex = -1;
 
-        function playSong(index) {
-            var item = songItems[index];
-            var songSrc = item.getAttribute('data-song');
-            var artist = item.getAttribute('data-artist');
-            var imgSrc = item.getAttribute('data-img');
+    function playSong(index) {
+        var item = songItems[index];
+        var songSrc = item.getAttribute('data-song');
+        var artist = item.getAttribute('data-artist');
+        var imgSrc = item.getAttribute('data-img');
 
-            audio.src = songSrc;
-            songTitle.textContent = item.textContent;
-            songArtist.textContent = artist;
-            artistImg.src = imgSrc;
-            playerSongTitle.textContent = item.textContent;
-            playerSongArtist.textContent = artist;
-            playerArtistImg.src = imgSrc;
-            songDetails.style.display = 'block';
+        audio.src = songSrc;
+        songTitle.textContent = item.textContent;
+        songArtist.textContent = artist;
+        artistImg.src = imgSrc;
+        playerSongTitle.textContent = item.textContent;
+        playerSongArtist.textContent = artist;
+        playerArtistImg.src = imgSrc;
+        songDetails.style.display = 'block';
 
-            currentSongIndex = index;
+        currentSongIndex = index;
+        audio.play();
+    }
+
+    function updateProgress() {
+        var currentTime = audio.currentTime;
+        var duration = audio.duration;
+        var progressPercent = (currentTime / duration) * 100;
+        progressBar.style.width = progressPercent + '%';
+
+        var currentMinutes = Math.floor(currentTime / 60);
+        var currentSeconds = Math.floor(currentTime % 60);
+        var durationMinutes = Math.floor(duration / 60);
+        var durationSeconds = Math.floor(duration % 60);
+
+        if (currentSeconds < 10) currentSeconds = '0' + currentSeconds;
+        if (durationSeconds < 10) durationSeconds = '0' + durationSeconds;
+
+        currentTimeEl.textContent = currentMinutes + ':' + currentSeconds;
+        durationEl.textContent = durationMinutes + ':' + durationSeconds;
+    }
+
+    playButton.addEventListener('click', function() {
+        if (audio.src) {
             audio.play();
+        } else if (currentSongIndex >= 0) {
+            playSong(currentSongIndex);
         }
+    });
 
-        function updateProgress() {
-            var currentTime = audio.currentTime;
-            var duration = audio.duration;
-            var progressPercent = (currentTime / duration) * 100;
-            progressBar.style.width = progressPercent + '%';
+    pauseButton.addEventListener('click', function() {
+        audio.pause();
+    });
 
-            var currentMinutes = Math.floor(currentTime / 60);
-            var currentSeconds = Math.floor(currentTime % 60);
-            var durationMinutes = Math.floor(duration / 60);
-            var durationSeconds = Math.floor(duration % 60);
-
-            if (currentSeconds < 10) currentSeconds = '0' + currentSeconds;
-            if (durationSeconds < 10) durationSeconds = '0' + durationSeconds;
-
-            currentTimeEl.textContent = currentMinutes + ':' + currentSeconds;
-            durationEl.textContent = durationMinutes + ':' + durationSeconds;
+    prevButton.addEventListener('click', function() {
+        if (currentSongIndex > 0) {
+            playSong(currentSongIndex - 1);
         }
+    });
 
-        playButton.addEventListener('click', function() {
-            if (audio.src) {
-                audio.play();
-            } else if (currentSongIndex >= 0) {
-                playSong(currentSongIndex);
+    nextButton.addEventListener('click', function() {
+        if (currentSongIndex < songItems.length - 1) {
+            playSong(currentSongIndex + 1);
+        }
+    });
+
+    volumeControl.addEventListener('change', function() {
+        audio.volume = this.value;
+    });
+
+    audio.addEventListener('timeupdate', updateProgress);
+
+    songItems.forEach(function(item, index) {
+        item.addEventListener('click', function() {
+            playSong(index);
+        });
+    });
+
+    searchInput.addEventListener('input', function() {
+        var query = this.value.toLowerCase();
+        songItems.forEach(function(item) {
+            var songTitle = item.textContent.toLowerCase();
+            if (songTitle.includes(query)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
             }
         });
+    });
 
-        pauseButton.addEventListener('click', function() {
-            audio.pause();
-        });
+    audio.addEventListener('ended', function() {
+        if (currentSongIndex < songItems.length - 1) {
+            playSong(currentSongIndex + 1);
+        }
+    });
+};
 
-        prevButton.addEventListener('click', function() {
-            if (currentSongIndex > 0) {
-                playSong(currentSongIndex - 1);
-            }
-        });
-
-        nextButton.addEventListener('click', function() {
-            if (currentSongIndex < songItems.length - 1) {
-                playSong(currentSongIndex + 1);
-            }
-        });
-
-        volumeControl.addEventListener('change', function() {
-            audio.volume = this.value;
-        });
-
-        audio.addEventListener('timeupdate', updateProgress);
-
-        songItems.forEach(function(item, index) {
-            item.addEventListener('click', function() {
-                playSong(index);
-            });
-        });
-
-        searchInput.addEventListener('input', function() {
-            var query = this.value.toLowerCase();
-            songItems.forEach(function(item) {
-                var songTitle = item.textContent.toLowerCase();
-                if (songTitle.includes(query)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-
-        audio.addEventListener('ended', function() {
-            if (currentSongIndex < songItems.length - 1) {
-                playSong(currentSongIndex + 1);
-            }
-        });
     </script>
 </body>
 </html>
